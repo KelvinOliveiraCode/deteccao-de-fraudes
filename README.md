@@ -1,330 +1,128 @@
-# Detector de Fraudes Bancarias - Credit Card Fraud Detection
+# Detecao de Fraudes em Cartoes de Credito
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Python-3.9%2B-blue?style=for-the-badge&logo=python&logoColor=white" alt="Python">
-  <img src="https://img.shields.io/badge/scikit--learn-1.3%2B-orange?style=for-the-badge&logo=scikit-learn&logoColor=white" alt="scikit-learn">
-  <img src="https://img.shields.io/badge/Matplotlib-3.7%2B-green?style=for-the-badge&logo=matplotlib&logoColor=white" alt="Matplotlib">
-  <img src="https://img.shields.io/badge/pandas-2.0%2B-purple?style=for-the-badge&logo=pandas&logoColor=white" alt="pandas">
-  <img src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge" alt="License">
+  <img src="https://img.shields.io/badge/Python-3.9%2B-blue?logo=python" alt="Python">
+  <img src="https://img.shields.io/badge/scikit--learn-1.3%2B-orange?logo=scikit-learn" alt="scikit-learn">
+  <img src="https://img.shields.io/badge/pandas-2.0%2B-purple?logo=pandas" alt="pandas">
+  <img src="https://img.shields.io/badge/License-MIT-yellow" alt="License">
 </p>
 
-<p align="center">
-  <b>Projeto de Machine Learning para deteccao de fraudes em transacoes de cartao de credito</b><br>
-  Desenvolvido como projeto de conclusao de curso de Machine Learning
-</p>
+Pipeline de machine learning que baixa o dataset publico de fraudes de cartao de credito, treina e compara tres modelos de classificacao e salva o melhor modelo com seu scaler para inspecao posterior.
 
----
+## Problema / Por que existe
 
-## Sumario
+Transacoes fraudulentas sao excecoes: no dataset de referencia, menos de 0,2 por cento das transacoes sao fraudes. Com dados tao desbalanceados, a acuracia sozinha engana — um modelo que previr sempre "legitima" teria cerca de 99,8 por cento de acuracia, mas detectaria zero fraudes. O projeto existe para treinar modelos que priorizem a deteccao de fraudes (recall) sem confiar apenas em acuracia, e para deixar os artefatos treinados salvos e inspecionaveis.
 
-- [Sobre o Projeto](#sobre-o-projeto)
-- [Dataset](#dataset)
-- [Tecnologias Utilizadas](#tecnologias-utilizadas)
-- [Estrutura do Projeto](#estrutura-do-projeto)
-- [Instalacao](#instalacao)
-- [Como Usar](#como-usar)
-- [Passo a Passo do Desenvolvimento](#passo-a-passo-do-desenvolvimento)
-- [Resultados](#resultados)
-- [Como Reproduzir](#como-reproduzir)
-- [Autor](#autor)
-- [Licenca](#licenca)
+## O que faz
 
----
+O pipeline em `main.py` executa, em ordem:
 
-## Sobre o Projeto
+1. Baixa o dataset `creditcard.csv` (ou usa a copia local se ja existir).
+2. Faz analise exploratoria: contagem de classes, valores ausentes, duplicatas, correlacao das features com o alvo e graficos salvos em `plots/`.
+3. Pre-processa: remove duplicatas, faz divisao estratificada 80/20 entre treino e teste e aplica `RobustScaler` apenas em `Amount` e `Time` (as demais features ja estao padronizadas via PCA).
+4. Tenta balancear as classes com SMOTE; se o pacote `imbalanced-learn` nao estiver instalado, usa `class_weight='balanced'` nos modelos como fallback.
+5. Treina `LogisticRegression`, `RandomForestClassifier` e `ExtraTreesClassifier` com `RandomizedSearchCV` (validador `StratifiedKFold` de 3 folds, otimizando f1).
+6. Seleciona o melhor modelo por score ponderado: recall 40 por cento, f1 30 por cento, precisao 20 por cento, acuracia 10 por cento.
+7. Avalia o vencedor com relatorio de classificacao, matriz de confusao, ROC AUC e especificidade.
+8. Gera graficos finais (curva ROC e matriz de confusao) em `plots/`.
+9. Salva artefatos: `modelo_<nome>.joblib`, `scaler.joblib` e `resultados_modelos.joblib`.
 
-Este projeto implementa um **sistema completo de deteccao de fraudes bancarias** utilizando tecnicas de Machine Learning. O objetivo e identificar transacoes fraudulentas em cartoes de credito com alta precisao, maximizando o **Recall** (taxa de deteccao de fraudes) e mantendo um bom equilibrio entre as metricas.
+O script `inspecionar_modelo.py` le os arquivos `.joblib` gerados e exprime detalhes do modelo, do scaler, da tabela comparativa, da importancia das features e dos melhores hiperparametros.
 
-### Objetivos do Projeto
+## Stack
 
-- [x] Construir um pipeline completo de Machine Learning
-- [x] Tratar dados altamente desbalanceados (99.8% legitimas vs 0.17% fraudes)
-- [x] Comparar multiplos modelos e selecionar o melhor
-- [x] Otimizar hiperparametros automaticamente
-- [x] Gerar visualizacoes e relatorios completos
-- [x] Salvar o modelo para uso em producao
-
----
-
-## Dataset
-
-O dataset utilizado e o **Credit Card Fraud Detection** da European Cardholders, disponibilizado pela [Kaggle](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud) e pela Google.
-
-| Caracteristica | Valor |
-|---|---|
-| **Total de transacoes** | 284.807 |
-| **Fraudes** | 492 (0.173%) |
-| **Transacoes legitimas** | 284.315 (99.827%) |
-| **Features** | 30 (Time, V1-V28, Amount) |
-| **Target** | Class (0=Legitima, 1=Fraude) |
-| **Fonte** | [download.tensorflow.org](https://storage.googleapis.com/download.tensorflow.org/data/creditcard.csv) |
-
-> **Nota:** As features V1-V28 sao o resultado de uma transformacao PCA (Principal Component Analysis) aplicada aos dados originais para proteger a privacidade dos clientes.
-
----
-
-## Tecnologias Utilizadas
-
-| Biblioteca | Versao | Proposito |
+| Componente | Versao | Proposito |
 |---|---|---|
-| [Python](https://www.python.org/) | 3.9+ | Linguagem principal |
-| [pandas](https://pandas.pydata.org/) | 2.0+ | Manipulacao de dados |
-| [NumPy](https://numpy.org/) | 1.24+ | Computacao numerica |
-| [scikit-learn](https://scikit-learn.org/) | 1.3+ | Modelos e metricas ML |
-| [Matplotlib](https://matplotlib.org/) | 3.7+ | Visualizacoes |
-| [Seaborn](https://seaborn.pydata.org/) | 0.12+ | Visualizacoes estatisticas |
-| [joblib](https://joblib.readthedocs.io/) | 1.3+ | Serializacao de modelos |
+| Python | 3.9+ | Linguagem |
+| pandas | 2.0.0+ | Leitura e manipulacao do dataset |
+| NumPy | 1.24.0+ | Operacoes numericas |
+| scikit-learn | 1.3.0+ | Modelos, divisao, escalonamento e metricas |
+| Matplotlib | 3.7.0+ | Graficos |
+| Seaborn | 0.12.0+ | Graficos estatisticos |
+| joblib | 1.3.0+ | Serializacao de modelo e scaler |
+| imbalanced-learn | opcional | SMOTE para balanceamento de classes |
 
----
+Instale as dependencias obrigatorias com `pip install -r requirements.txt`. O SMOTE so e usado se `imbalanced-learn` estiver instalado; caso contrario o codigo segue com `class_weight`.
 
-## Estrutura do Projeto
+## Como funciona
+
+Os dados vem do dataset Credit Card Fraud Detection (transacoes europeias de cartao de credito), hospedado em:
+
+https://storage.googleapis.com/download.tensorflow.org/data/creditcard.csv
+
+O dataset tem 30 features (`Time`, `Amount` e `V1` a `V28`, ja transformadas por PCA para proteger a privacidade) e a coluna alvo `Class` (0 = legitima, 1 = fraude).
+
+Decisoes de implementacao no codigo:
+
+- `RobustScaler` e aplicado apenas em `Amount` e `Time`; o ajuste (`fit`) e feito somente no conjunto de treino para evitar vazamento de dados.
+- A divisao e estratificada, preservando a proporcao de fraudes entre treino e teste.
+- Quando `imbalanced-learn` esta disponivel, o SMOTE gera amostras sinteticas da classe minoritaria apenas no treino; o teste permanece na distribuicao original.
+- A escolha do modelo usa um score ponderado que prioriza recall, pois em deteccao de fraudes o custo de deixar passar uma fraude e maior que o custo de um falso alarme.
+- `RandomizedSearchCV` e configurado com poucas combinacoes (`n_iter=5`) para manter a execucao rapida.
+
+## Como rodar
+
+```bash
+git clone https://github.com/KelvinOliveiraCode/fraud-detection-project.git
+cd fraud-detection-project
+python -m venv venv
+venv\Scripts\activate          # Windows
+# source venv/bin/activate   # Linux/Mac
+pip install -r requirements.txt
+python main.py
+```
+
+Na primeira execucao o dataset e baixado automaticamente (cerca de 67 MB) e salvo como `creditcard.csv`. Graficos sao gravados em `plots/` e os artefatos do modelo na raiz do projeto.
+
+Para inspecionar os artefatos salvos:
+
+```bash
+python inspecionar_modelo.py
+```
+
+O tempo total de treinamento depende da maquina e da disponibilidade do SMOTE.
+
+## Estrutura do projeto
 
 ```
 fraud-detection-project/
 |
-|-- main.py                    # Pipeline completo de treinamento
-|-- inspecionar_modelo.py      # Visualizacao dos resultados salvos
-|-- README.md                  # Documentacao
-|-- requirements.txt           # Dependencias
-|-- .gitignore                 # Arquivos ignorados pelo Git
-|-- LICENSE                    # Licenca MIT
+|-- main.py                  # Pipeline completo: dados, EDA, pre-processamento, modelos, avaliacao e salvamento
+|-- inspecionar_modelo.py    # Leitura e visualizacao dos artefatos .joblib gerados
+|-- requirements.txt         # Dependencias obrigatorias
+|-- gitignore                # Arquivos ignorados pelo Git
+|-- LICENSE                  # Licenca MIT
+|-- README.md                # Este arquivo
+|
+|-- creditcard.csv           # Gerado: dataset baixado (ignorado pelo Git)
+|-- plots/                   # Gerado: graficos de EDA e resultados finais
+|-- modelo_*.joblib          # Gerado: melhor modelo treinado
+|-- scaler.joblib            # Gerado: scaler ajustado no treino
+|-- resultados_modelos.joblib# Gerado: metricas e hiperparametros de todos os modelos
 ```
 
-> **Arquivos gerados na execucao:**
-> - `creditcard.csv` — Dataset (baixado automaticamente, ~67MB)
-> - `plots/` — Graficos e visualizacoes
-> - `modelo_*.joblib` — Modelo treinado
-> - `scaler.joblib` — Scaler ajustado
-> - `resultados_modelos.joblib` — Metricas comparativas
-
----
-
-## Instalacao
-
-### 1. Clone o repositorio
-
-```bash
-git clone https://github.com/KelvinOliveiraCode/fraud-detection-project.git
-cd fraud-detection-project
-```
-
-### 2. Crie um ambiente virtual (recomendado)
-
-```bash
-# Windows
-python -m venv venv
-venv\Scripts\activate
-
-# Linux/Mac
-python3 -m venv venv
-source venv/bin/activate
-```
-
-### 3. Instale as dependencias
-
-```bash
-pip install -r requirements.txt
-```
-
-> **Opcional:** Para tecnicas avancadas de balanceamento (SMOTE):
-> ```bash
-> pip install imbalanced-learn
-> ```
-
----
-
-## Como Usar
-
-### Treinar o modelo
-
-Execute o pipeline completo de treinamento:
-
-```bash
-python main.py
-```
-
-O script ira:
-1. Baixar o dataset (se nao existir localmente)
-2. Realizar analise exploratoria (EDA)
-3. Pre-processar os dados (remover duplicatas, escalar)
-4. Balancear as classes (SMOTE ou class_weight)
-5. Treinar e comparar 3 modelos (LogisticRegression, RandomForest, ExtraTrees)
-6. Selecionar o melhor modelo por pontuacao ponderada
-7. Salvar artefatos (.joblib)
-8. Gerar visualizacoes na pasta `plots/`
-
-> **Tempo estimado:** ~3 a 8 minutos (dependendo da maquina)
-
-### Visualizar resultados
-
-Apos o treinamento, inspecione os modelos salvos:
-
-```bash
-python inspecionar_modelo.py
-```
-
-Este script exibe:
-- Informacoes detalhadas do modelo vencedor
-- Tabela comparativa de todos os modelos
-- Importancia das features (com grafico)
-- Melhores hiperparametros encontrados
-
----
-
-## Passo a Passo do Desenvolvimento
-
-### Fase 1: Entendimento do Problema
-
-O dataset apresenta um **desbalanceamento extremo**: apenas 0.17% das transacoes sao fraudulentas. Isso significa que um modelo que sempre preve "legitima" teria 99.8% de accuracy, mas 0% de recall para fraudes — o que e inutil.
-
-**Metrica principal:** Recall (detectar o maximo de fraudes possivel)
-**Metrica secundaria:** F1-Score (equilibrio entre precision e recall)
-
-### Fase 2: Analise Exploratoria (EDA)
-
-- **Distribuicao das classes**: Visualizacao do desbalanceamento (284.315 vs 492)
-- **Matriz de correlacao**: Identificacao de features relevantes
-- **Analise de Amount**: Comparacao de valores entre classes
-- **Features V1-V28**: Histogramas das mais correlacionadas com fraude
-
-Principais insights:
-- Features **V17, V14, V12, V10, V16** sao as mais correlacionadas com fraude
-- Transacoes fraudulentas tendem a ter valores (Amount) mais baixos
-- Distribuicao temporal mostra picos de fraude em horarios especificos
-
-### Fase 3: Pre-processamento
-
-1. **Remocao de duplicatas**: 1.081 linhas duplicadas removidas
-2. **Divisao estratificada**: 80% treino / 20% teste (mantem proporcao de fraudes)
-3. **RobustScaler**: Aplicado em `Amount` e `Time`
-   - Resistente a outliers (usa mediana e IQR em vez de media/desvio)
-   - Evita vazamento de dados (fit apenas no conjunto de treino)
-
-### Fase 4: Balanceamento
-
-Tecnica utilizada: **SMOTE** (Synthetic Minority Over-sampling Technique)
-- Gera amostras sinteticas da classe minoritaria (fraudes)
-- Cria ~227.000 novas amostras de fraude
-- Resultado: dataset balanceado 50/50
-
-> Se `imbalanced-learn` nao estiver instalado, usa `class_weight='balanced'` nos modelos como fallback.
-
-### Fase 5: Modelagem
-
-Tres modelos treinados com `RandomizedSearchCV`:
-
-| Modelo | Caracteristicas |
-|---|---|
-| **LogisticRegression** | Rapido, interpretavel, baseline solido |
-| **RandomForest** | Ensemble robusto, bom com outliers, alta performance |
-| **ExtraTrees** | Variacao do RF, mais rapido, menos overfitting |
-
-**Otimizacao:**
-- `n_iter=5` combinacoes de hiperparametros por modelo
-- `StratifiedKFold` com 3 folds (mantem proporcao de classes)
-- Scoring: `f1` (otimiza equilibrio precision/recall)
-- Modelos leves: 30-50 arvores, profundidade maxima 10
-
-### Fase 6: Avaliacao e Selecao
-
-**Criterio de selecao ponderado:**
-
-```
-Score = Recall*0.4 + F1-Score*0.3 + Precision*0.2 + Accuracy*0.1
-```
-
-| Prioridade | Peso | Justificativa |
-|---|---|---|
-| Recall | 40% | Nao perder fraudes e crucial em sistemas bancarios |
-| F1-Score | 30% | Equilibrio geral entre precision e recall |
-| Precision | 20% | Evitar falsos alarmes excessivos |
-| Accuracy | 10% | Menos relevante em dados desbalanceados |
-
-### Fase 7: Salvamento
-
-Artefatos gerados automaticamente:
-- `modelo_*.joblib` — Modelo treinado pronto para producao
-- `scaler.joblib` — Scaler para preprocessar novas transacoes
-- `resultados_modelos.joblib` — Metricas comparativas de todos os modelos
-
----
-
-## Resultados
-
-Exemplo de resultado tipico (pode variar conforme a execucao):
-
-### Melhor Modelo: RandomForest
-
-```
-Accuracy:         0.9994
-Precision:        0.8046
-Recall:           0.7368
-F1-Score:         0.8046
-ROC AUC:          0.9445
-
-Melhores hiperparametros:
-  class_weight: balanced
-  max_depth: 10
-  min_samples_split: 2
-  n_estimators: 50
-```
-
-### Comparacao de Modelos
-
-| Modelo | Accuracy | Precision | Recall | F1-Score | ROC AUC | Tempo |
-|---|---|---|---|---|---|---|
-| LogisticRegression | 0.9752 | 0.0562 | **0.8737** | 0.1057 | 0.9657 | ~4s |
-| **RandomForest** | **0.9994** | **0.8046** | 0.7368 | **0.8046** | 0.9445 | ~35s |
-| ExtraTrees | 0.9987 | 0.6667 | 0.8000 | 0.6667 | **0.9621** | ~3s |
-
-> **RandomForest** foi selecionado por apresentar o melhor equilibrio ponderado entre as metricas, com excelente precision e F1-Score.
-
----
-
-## Como Reproduzir
-
-Siga os passos abaixo para reproduzir o projeto em sua maquina:
-
-```bash
-# 1. Clone o repositorio
-git clone https://github.com/KelvinOliveiraCode/fraud-detection-project.git
-
-# 2. Entre na pasta
-cd fraud-detection-project
-
-# 3. Crie ambiente virtual (opcional mas recomendado)
-python -m venv venv
-venv\Scripts\activate  # Windows
-# source venv/bin/activate  # Linux/Mac
-
-# 4. Instale dependencias
-pip install -r requirements.txt
-
-# 5. Execute o treinamento (~3-8 minutos)
-python main.py
-
-# 6. Visualize os resultados
-python inspecionar_modelo.py
-```
-
-O dataset sera baixado automaticamente na primeira execucao (~67MB).
-
----
-
-## Autor
-
-**Kelvin Oliveira**
-
-- GitHub: [@KelvinOliveiraCode](https://github.com/KelvinOliveiraCode)
-
----
+## Trade-offs e decisoes
+
+- **Recall acima de acuracia**: o score de selecao pondera recall em 40 por cento. Isso pode aumentar falsos positivos, o que e aceitavel em deteccao de fraudes onde perder um caso e mais caro que revisar um alarme falso.
+- **SMOTE opcional**: nao esta em `requirements.txt` para evitar uma dependencia extra. Se ausente, o codigo usa `class_weight='balanced'` sem interromper a execucao.
+- **Execucao rapida**: modelos leves (30–50 arvores, profundidade maxima 10) e poucas combinacoes de hiperparametros. Isso tradea qualidade maximizada por tempo de treinamento reduzido.
+- **Apenas `Amount` e `Time` sao escalados**: `V1–V28` ja sao componentes principais padronizados, então escalas-las novamente nao agrega valor.
+- **Artefatos em joblib**: simples de salvar e carregar, mas nao incluem versionamento de modelo nem metadata de dados de treino.
+
+## Limitações conhecidas
+
+- Os resultados numericos dependem da execucao e do ambiente; nao sao garantidos nem reproduziveis bit a bit entre maquinas diferentes.
+- O modelo e avaliado apenas sobre o mesmo dataset estatico, dentro do split 80/20. Nao ha validacao em dados totalmente novos fora do repositorio.
+- As features `V1–V28` sao anonimizadas por PCA, portanto nao sao diretamente interpretaveis como variaveis de negocio.
+- Na producao seria necessario: um limiar de decisao ajustavel sobre `predict_proba`, monitoramento de drift de dados e retreino periodico. O projeto nao implementa nada disso.
+- Os arquivos `.joblib` contêm modelos treinados em pickle-like format; carregar arquivos de origens nao confiaveis e um risco de seguranca.
 
 ## Licenca
 
-Este projeto esta licenciado sob a licenca MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
+MIT License. Veja o arquivo [LICENSE](LICENSE) para detalhes.
 
----
+## Autor
 
-<p align="center">
-  Desenvolvido com dedicacao para o curso da DIO
-</p>
+Kelvin Oliveira
+
+GitHub: [@KelvinOliveiraCode](https://github.com/KelvinOliveiraCode)
