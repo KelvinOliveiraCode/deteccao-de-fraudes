@@ -2,7 +2,7 @@
 
 <div align="center">
 
-**English** · [Português (Brasil)](README.md)
+[English](README.en.md) · **Português (Brasil)**
 
 </div>
 
@@ -18,31 +18,31 @@ Detecção de fraude em cartão com ML: 3 modelos, 284k transações, ROC AUC 0.
 
 ---
 
-## Quick Start
+## Início Rápido
 
 ```bash
-# Clone and enter
+# Clone e entre
 git clone https://github.com/KelvinOliveiraCode/<repo>.git
 cd <repo>
 
-# Install dependencies
+# Instale dependências
 pip install -r requirements.txt
 
-# Run the project
+# Execute o projeto
 python main.py
 
-# Run tests
+# Execute os testes
 pytest
 ```
 
 ## Como funciona
 
-The project is organized as a **modular pipeline** with independent stages:
+O projeto é organizado como um **pipeline modular** com etapas independentes:
 
 - `inspecionar_modelo`
 - `main`
 
-Each module has a single responsibility and can be tested or replaced independently.
+Cada módulo tem responsabilidade única e pode ser testado ou substituído independentemente.
 
 ---
 
