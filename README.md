@@ -14,7 +14,7 @@
 
 ## O que é
 
-Detecção de fraude em cartão com ML: 3 modelos, 284k transações, ROC AUC 0.94 | Credit card fraud detection with ML
+Detecção de fraude em cartão com ML: 3 modelos, 284k transações, ROC AUC 0.94
 
 ---
 
