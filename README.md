@@ -46,18 +46,18 @@ Cada módulo tem responsabilidade única e pode ser testado ou substituído inde
 
 ---
 
-## Capabilities
+## Capacidades
 
-| Capability | Description |
+| Capacidade | Descrição |
 |------------|-------------|
-| Data Loading | Auto-download TensorFlow creditcard.csv (284k transactions) with local caching |
-| EDA & Visualization | Class distribution, Amount histograms, correlation heatmaps (matplotlib/seaborn) |
-| Preprocessing | RobustScaler on Amount/Time, stratified split, duplicate removal |
-| Balancing | SMOTE oversampling (fallback: class_weight="balanced") |
-| Modeling | LogisticRegression, RandomForest, ExtraTrees with RandomizedSearchCV (StratifiedKFold) |
-| Metrics | Accuracy, Precision, Recall, F1, ROC AUC, Specificity, Confusion Matrix |
-| Selection | Weighted score: Recall 40% + F1 30% + Precision 20% + Accuracy 10% |
-| Persistence | joblib serialization for model, scaler, and full results |
+| Carregamento de Dados | Auto-download do TensorFlow creditcard.csv (284k transações) com cache local |
+| EDA e Visualização | Distribuição de classes, histogramas de Amount, heatmaps de correlação (matplotlib/seaborn) |
+| Pré-processamento | RobustScaler em Amount/Time, split estratificado, remoção de duplicatas |
+| Balanceamento | SMOTE oversampling (fallback: class_weight="balanced") |
+| Modelagem | LogisticRegression, RandomForest, ExtraTrees com RandomizedSearchCV (StratifiedKFold) |
+| Métricas | Accuracy, Precision, Recall, F1, ROC AUC, Specificity, Confusion Matrix |
+| Seleção | Score ponderado: Recall 40% + F1 30% + Precision 20% + Accuracy 10% |
+| Persistência | Serialização joblib para modelo, scaler e resultados completos |
 
 
 ---
@@ -78,26 +78,26 @@ Cada módulo tem responsabilidade única e pode ser testado ou substituído inde
 
 ---
 
-## FAQ
+## Perguntas Frequentes
 
 <details>
-<summary><strong>Why SMOTE with class_weight fallback?</strong></summary>
+<summary><strong>Por que SMOTE com fallback class_weight?</strong></summary>
 
-SMOTE generates synthetic minority samples but requires imbalanced-learn. The fallback ensures the pipeline runs even without it.
+SMOTE gera amostras sintéticas da classe minoritária mas exige imbalanced-learn. O fallback garante que o pipeline rode mesmo sem ele.
 
 </details>
 
 <details>
-<summary><strong>Why weighted score for model selection?</strong></summary>
+<summary><strong>Por que score ponderado para seleção de modelo?</strong></summary>
 
-Fraud detection prioritizes Recall (catching frauds). The 40/30/20/10 weighting balances Recall with Precision and F1.
+Detecção de fraude prioriza Recall (pegar fraudes). O peso 40/30/20/10 equilibra Recall com Precision e F1.
 
 </details>
 
 <details>
-<summary><strong>Can I use this with new data?</strong></summary>
+<summary><strong>Posso usar com dados novos?</strong></summary>
 
-Yes ,  retrain by running main.py with your CSV (same schema). The pipeline handles download, preprocessing, and model export automatically.
+Sim ,  retreine rodando main.py com seu CSV (mesmo schema). O pipeline cuida de download, pré-processamento e exportação do modelo automaticamente.
 
 </details>
 
@@ -105,15 +105,15 @@ Yes ,  retrain by running main.py with your CSV (same schema). The pipeline hand
 
 ---
 
-## Documentation
+## Documentação
 
-- **Source Code** ,  Browse the `src/` directory for implementation details
-- **API Reference** ,  Inline docstrings + type hints
-- **Architecture Diagram** ,  See [architecture.mermaid](docs/architecture.mermaid) (if present)
-- **Changelog** ,  [CHANGELOG.md](CHANGELOG.md) (if present)
-- **Contributing** ,  [CONTRIBUTING.md](CONTRIBUTING.md) (if present)
+- **Código-Fonte** ,  Navegue pelo diretório `src/` para detalhes de implementação
+- **Referência da API** ,  Docstrings inline + type hints
+- **Diagrama de Arquitetura** ,  Veja [architecture.mermaid](docs/architecture.mermaid) (se presente)
+- **Changelog** ,  [CHANGELOG.md](CHANGELOG.md) (se presente)
+- **Contribuindo** ,  [CONTRIBUTING.md](CONTRIBUTING.md) (se presente)
 
-## License
+## Licença
 
 [MIT](LICENSE) ,  Kelvin Oliveira
 
@@ -121,8 +121,8 @@ Yes ,  retrain by running main.py with your CSV (same schema). The pipeline hand
 
 <div align="center">
 
-**Built with** · Python 3 + scikit-learn + pandas
+**Construído com** · Python 3 + scikit-learn + pandas
 
-**Author** · [Kelvin Oliveira](https://github.com/KelvinOliveiraCode) · [Portfolio](https://kelvinoliveiracode.github.io/portfolio/)
+**Autor** · [Kelvin Oliveira](https://github.com/KelvinOliveiraCode) · [Portfolio](https://kelvinoliveiracode.github.io/portfolio/)
 
 </div>
