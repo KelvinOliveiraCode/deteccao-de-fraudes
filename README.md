@@ -1,87 +1,100 @@
 # deteccao-de-fraudes
 
-![Python](https://img.shields.io/badge/Python-3.x-blue?logo=python)   ![status: concluido](https://img.shields.io/badge/status-concluido-green)   ![licenca: MIT](https://img.shields.io/badge/licenca-MIT-blue)
+[![Python](https://img.shields.io/badge/Python-3.x-blue?logo=python)](https://www.python.org/)   ![status: concluido](https://img.shields.io/badge/status-concluido-green)   ![licenca: MIT](https://img.shields.io/badge/licenca-MIT-blue)
 
 ## Resumo
 
-Projeto em Python desenvolvido como estudo de engenharia de software. Detecção de fraude em cartão com ML: 3 modelos, 284k transações, ROC AUC 0.94 | Credit card fraud detection with ML
+Detecção de fraude em cartão com ML: 3 modelos, 284k transações, ROC AUC 0.94 | Credit card fraud detection with ML
+## Problema / Por que existe
 
-## Problema / por que existe
-
-O projeto aborda um recorte pratico e automatiza uma tarefa que, feita manualmente, e repetitiva e propensa a erro. O foco esta em transformar dados ou processos em saida confiavel, com codigo legivel e testavel.
-
+O projeto aborda um recorte prático e automatiza uma tarefa que, feita manualmente, é repetitiva e propensa a erro. O foco está em transformar dados ou processos em saída confiável, com código legível, testável e extensível.
 ## Arquitetura
 
-O codigo esta organizado por responsabilidade:
+O código está organizado por responsabilidade em 0 classes principais:
+## Padrões de Projeto e Técnicas Identificadas
 
-- Entrada: leitura de arquivo, API, entrada do usuario ou captura de dados (dependendo do modulo).
-- Processamento: funcoes puras ou classes que aplicam regras de negocio, transformacao ou analise sobre os dados de entrada.
-- Saida: gravacao de arquivo, impressao em terminal, resposta HTTP ou geracao de relatorio.
-
-Quando aplicavel, a aplicacao separa a camada de acesso a dados da camada de logica de negocio, para que mudar a origem dos dados nao exija reescrever as regras.
-
-## Tecnologias
-
-- Python 3.x
-- pandas
-- numpy
+- Confusion matrix / Classification report
+- Duplicate removal
+- Feature scaling
+- Hyperparameter tuning (RandomizedSearchCV)
+- ML Metrics (ROC AUC, F1, Precision, Recall)
+- ML Pipeline
+- Model/artifact persistence
+- SMOTE oversampling
+- StratifiedKFold CV
+- Visualization exports
+- class_weight balanced
+- joblib serialization
 - matplotlib
-- seaborn
+- numpy
+- pandas
 - scikit-learn
+- seaborn
+## Dependências e Bibliotecas Principais
+
+- os
+- glob
 - joblib
-
-- Sem CI configurado neste repositorio.
-
-Nenhum teste automatizado detectado na varredura.
-
+- numpy as np
+- pandas as pd
+- matplotlib
+- seaborn as sns
+- warnings
+- time
+- sklearn.model_selection
+- sklearn.preprocessing
+- sklearn.linear_model
+- sklearn.ensemble
+- sklearn.metrics
 ## O que faz
 
 Detecção de fraude em cartão com ML: 3 modelos, 284k transações, ROC AUC 0.94 | Credit card fraud detection with ML
-
 ## Como rodar
 
 Requisitos: Python 3.x instalado.
 
-```
-# instalar dependencias (se houver requirements.txt)
+```bash
+# instalar dependências (se houver requirements.txt)
 pip install -r requirements.txt
+```
 
+```bash
 # executar
 python main.py
+```
 
+```bash
 # executar testes
 pytest
 ```
-
-## Estrutura do projeto
-
-- gitignore, inspecionar_modelo.py, LICENSE, main.py, README.en.md, README.md, requirements.txt
+## Estrutura do Projeto (Classes Principais)
 
 
-## Trade-offs e decisões
+## Trade-offs e Decisões Técnicas
 
-- Biblioteca padrao sempre que possivel, dependencias externas so quando o ganho justifica a manutencao.
-- Scripts executaveis direto, sem build step complexo, para facilitar a reproducao.
-- Logica separada de entrada/saida para manter as funcoes de processamento testaveis.
+- Biblioteca padrão sempre que possível; dependências externas só quando o ganho justifica a manutenção.
+- Pipeline linear e modular: cada etapa (EDA, pré-processamento, balanceamento, modelagem, avaliação) é uma função isolada, facilitando testes e substituição.
+- SMOTE opcional com fallback para `class_weight="balanced"` quando `imbalanced-learn` não está instalado.
+- `RobustScaler` aplicado apenas em `Amount` e `Time`; features anonimizadas (V1-V28) já normalizadas no dataset original.
+- Seleção de modelo por score ponderado: Recall(40%) + F1(30%) + Precision(20%) + Accuracy(10%) ,  prioriza detecção de fraudes (recall) sem ignorar precisão.
+- Artefatos salvos via `joblib`: modelo, scaler e resultados completos para reprodutibilidade.
+## Limitações Conhecidas
 
-## Limitações conhecidas
-
-- Escopo limitado ao recorte descrito; nao e uma plataforma completa.
-- Depende de Python 3.x no ambiente de execucao.
-- Nenhum teste automatizado detectado.
-
-
+- Escopo limitado ao pipeline de detecção de fraude; não é uma plataforma ML completa.
+- Depende de Python 3.x e das bibliotecas listadas no `requirements.txt`.
+- SMOTE só disponível se `imbalanced-learn` estiver instalado; caso contrário usa `class_weight`.
+- Dataset fixo (creditcard.csv do TensorFlow); não há pipeline de ingestão de novos dados.
+- Modelos treinados em CPU; não há suporte a GPU/TPU configurado.
 ## Testes
 
-```
+```bash
 pytest
 ```
-
+Nenhum teste automatizado detectado na varredura.
 ## Licença
 
-Distribuído sob a licenca MIT. Consulte o arquivo `LICENSE` do repositorio.
-
+Distribuído sob a licença MIT. Consulte o arquivo `LICENSE` do repositório.
 ## Autor
 
-Kelvin Oliveira, https://github.com/KelvinOliveiraCode
+Kelvin Oliveira ,  https://github.com/KelvinOliveiraCode
 Portfolio: https://kelvinoliveiracode.github.io/portfolio/
