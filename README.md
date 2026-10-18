@@ -1,100 +1,128 @@
 # deteccao-de-fraudes
 
-[![Python](https://img.shields.io/badge/Python-3.x-blue?logo=python)](https://www.python.org/)   ![status: concluido](https://img.shields.io/badge/status-concluido-green)   ![licenca: MIT](https://img.shields.io/badge/licenca-MIT-blue)
+<div align="center">
 
-## Resumo
+**English** · [Português (Brasil)](README.md)
 
-Detecção de fraude em cartão com ML: 3 modelos, 284k transações, ROC AUC 0.94 | Credit card fraud detection with ML
-## Problema / Por que existe
+</div>
 
-O projeto aborda um recorte prático e automatiza uma tarefa que, feita manualmente, é repetitiva e propensa a erro. O foco está em transformar dados ou processos em saída confiável, com código legível, testável e extensível.
-## Arquitetura
+[![Python 3](https://img.shields.io/badge/Python-3.x-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/) [![scikit-learn](https://img.shields.io/badge/scikit--learn-F7931E?style=flat-square&logo=scikit-learn)](https://scikit-learn.org/) [![pandas](https://img.shields.io/badge/pandas-150458?style=flat-square&logo=pandas)](https://pandas.pydata.org/) [![pytest](https://img.shields.io/badge/pytest-0A9EDC?style=flat-square&logo=pytest)](https://docs.pytest.org/) [![MIT License](https://img.shields.io/badge/License-MIT-f4c430?style=flat-square)](LICENSE)
 
-O código está organizado por responsabilidade em 0 classes principais:
-## Padrões de Projeto e Técnicas Identificadas
+### Detecção de fraude em cartão com ML: 3 modelos, 284k transações, ROC AUC 0.94
 
-- Confusion matrix / Classification report
-- Duplicate removal
-- Feature scaling
-- Hyperparameter tuning (RandomizedSearchCV)
-- ML Metrics (ROC AUC, F1, Precision, Recall)
-- ML Pipeline
-- Model/artifact persistence
-- SMOTE oversampling
-- StratifiedKFold CV
-- Visualization exports
-- class_weight balanced
-- joblib serialization
-- matplotlib
-- numpy
-- pandas
-- scikit-learn
-- seaborn
-## Dependências e Bibliotecas Principais
+---
 
-- os
-- glob
-- joblib
-- numpy as np
-- pandas as pd
-- matplotlib
-- seaborn as sns
-- warnings
-- time
-- sklearn.model_selection
-- sklearn.preprocessing
-- sklearn.linear_model
-- sklearn.ensemble
-- sklearn.metrics
-## O que faz
+## O que é
 
 Detecção de fraude em cartão com ML: 3 modelos, 284k transações, ROC AUC 0.94 | Credit card fraud detection with ML
-## Como rodar
 
-Requisitos: Python 3.x instalado.
+---
+
+## Quick Start
 
 ```bash
-# instalar dependências (se houver requirements.txt)
+# Clone and enter
+git clone https://github.com/KelvinOliveiraCode/<repo>.git
+cd <repo>
+
+# Install dependencies
 pip install -r requirements.txt
-```
 
-```bash
-# executar
+# Run the project
 python main.py
-```
 
-```bash
-# executar testes
+# Run tests
 pytest
 ```
-## Estrutura do Projeto (Classes Principais)
+
+## Como funciona
+
+The project is organized as a **modular pipeline** with independent stages:
+
+- `inspecionar_modelo`
+- `main`
+
+Each module has a single responsibility and can be tested or replaced independently.
+
+---
+
+## Capabilities
+
+| Capability | Description |
+|------------|-------------|
+| Data Loading | Auto-download TensorFlow creditcard.csv (284k transactions) with local caching |
+| EDA & Visualization | Class distribution, Amount histograms, correlation heatmaps (matplotlib/seaborn) |
+| Preprocessing | RobustScaler on Amount/Time, stratified split, duplicate removal |
+| Balancing | SMOTE oversampling (fallback: class_weight="balanced") |
+| Modeling | LogisticRegression, RandomForest, ExtraTrees with RandomizedSearchCV (StratifiedKFold) |
+| Metrics | Accuracy, Precision, Recall, F1, ROC AUC, Specificity, Confusion Matrix |
+| Selection | Weighted score: Recall 40% + F1 30% + Precision 20% + Accuracy 10% |
+| Persistence | joblib serialization for model, scaler, and full results |
 
 
-## Trade-offs e Decisões Técnicas
+---
 
-- Biblioteca padrão sempre que possível; dependências externas só quando o ganho justifica a manutenção.
-- Pipeline linear e modular: cada etapa (EDA, pré-processamento, balanceamento, modelagem, avaliação) é uma função isolada, facilitando testes e substituição.
-- SMOTE opcional com fallback para `class_weight="balanced"` quando `imbalanced-learn` não está instalado.
-- `RobustScaler` aplicado apenas em `Amount` e `Time`; features anonimizadas (V1-V28) já normalizadas no dataset original.
-- Seleção de modelo por score ponderado: Recall(40%) + F1(30%) + Precision(20%) + Accuracy(10%) ,  prioriza detecção de fraudes (recall) sem ignorar precisão.
-- Artefatos salvos via `joblib`: modelo, scaler e resultados completos para reprodutibilidade.
-## Limitações Conhecidas
+## Showcase
 
-- Escopo limitado ao pipeline de detecção de fraude; não é uma plataforma ML completa.
-- Depende de Python 3.x e das bibliotecas listadas no `requirements.txt`.
-- SMOTE só disponível se `imbalanced-learn` estiver instalado; caso contrário usa `class_weight`.
-- Dataset fixo (creditcard.csv do TensorFlow); não há pipeline de ingestão de novos dados.
-- Modelos treinados em CPU; não há suporte a GPU/TPU configurado.
-## Testes
+### Fraud Detection Pipeline
 
-```bash
-pytest
-```
-Nenhum teste automatizado detectado na varredura.
-## Licença
+1. **Load** ,  Auto-fetch 284k transactions (TensorFlow dataset) with local caching
+2. **EDA** ,  Class imbalance (0.17% fraud), Amount distributions, correlation heatmap
+3. **Preprocess** ,  RobustScaler on Amount/Time, stratified 80/20 split
+4. **Balance** ,  SMOTE oversampling (fallback: class_weight=balanced)
+5. **Model** ,  3 algorithms, RandomizedSearchCV, StratifiedKFold, F1 scoring
+6. **Select** ,  Weighted score: Recall 40% + F1 30% + Precision 20% + Acc 10%
+7. **Export** ,  joblib saves model, scaler, full results
 
-Distribuído sob a licença MIT. Consulte o arquivo `LICENSE` do repositório.
-## Autor
+[View main.py](main.py) · [Inspect Model](inspecionar_modelo.py)
 
-Kelvin Oliveira ,  https://github.com/KelvinOliveiraCode
-Portfolio: https://kelvinoliveiracode.github.io/portfolio/
+---
+
+## FAQ
+
+<details>
+<summary><strong>Why SMOTE with class_weight fallback?</strong></summary>
+
+SMOTE generates synthetic minority samples but requires imbalanced-learn. The fallback ensures the pipeline runs even without it.
+
+</details>
+
+<details>
+<summary><strong>Why weighted score for model selection?</strong></summary>
+
+Fraud detection prioritizes Recall (catching frauds). The 40/30/20/10 weighting balances Recall with Precision and F1.
+
+</details>
+
+<details>
+<summary><strong>Can I use this with new data?</strong></summary>
+
+Yes ,  retrain by running main.py with your CSV (same schema). The pipeline handles download, preprocessing, and model export automatically.
+
+</details>
+
+
+
+---
+
+## Documentation
+
+- **Source Code** ,  Browse the `src/` directory for implementation details
+- **API Reference** ,  Inline docstrings + type hints
+- **Architecture Diagram** ,  See [architecture.mermaid](docs/architecture.mermaid) (if present)
+- **Changelog** ,  [CHANGELOG.md](CHANGELOG.md) (if present)
+- **Contributing** ,  [CONTRIBUTING.md](CONTRIBUTING.md) (if present)
+
+## License
+
+[MIT](LICENSE) ,  Kelvin Oliveira
+
+---
+
+<div align="center">
+
+**Built with** · Python 3 + scikit-learn + pandas
+
+**Author** · [Kelvin Oliveira](https://github.com/KelvinOliveiraCode) · [Portfolio](https://kelvinoliveiracode.github.io/portfolio/)
+
+</div>

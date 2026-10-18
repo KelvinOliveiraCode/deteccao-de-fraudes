@@ -1,100 +1,128 @@
 # deteccao-de-fraudes
 
-[![Python](https://img.shields.io/badge/Python-3.x-blue?logo=python)](https://www.python.org/)   ![status: done](https://img.shields.io/badge/status-done-green)   ![license: MIT](https://img.shields.io/badge/license-MIT-blue)
+<div align="center">
 
-## Summary
+**English** · [Português (Brasil)](README.md)
 
-Detecção de fraude em cartão com ML: 3 modelos, 284k transações, ROC AUC 0.94 | Credit card fraud detection with ML
-## Problem / Why it exists
+</div>
 
-The project addresses a practical scope and automates a task that, done manually, is repetitive and error-prone. The focus is on turning data or processes into reliable output, with readable, testable, and extensible code.
-## Architecture
+[![Python 3](https://img.shields.io/badge/Python-3.x-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/) [![scikit-learn](https://img.shields.io/badge/scikit--learn-F7931E?style=flat-square&logo=scikit-learn)](https://scikit-learn.org/) [![pandas](https://img.shields.io/badge/pandas-150458?style=flat-square&logo=pandas)](https://pandas.pydata.org/) [![pytest](https://img.shields.io/badge/pytest-0A9EDC?style=flat-square&logo=pytest)](https://docs.pytest.org/) [![MIT License](https://img.shields.io/badge/License-MIT-f4c430?style=flat-square)](LICENSE)
 
-The code is organized by responsibility into 0 main classes:
-## Design Patterns and Techniques Identified
+### Credit card fraud detection with ML
 
-- Confusion matrix / Classification report
-- Duplicate removal
-- Feature scaling
-- Hyperparameter tuning (RandomizedSearchCV)
-- ML Metrics (ROC AUC, F1, Precision, Recall)
-- ML Pipeline
-- Model/artifact persistence
-- SMOTE oversampling
-- StratifiedKFold CV
-- Visualization exports
-- class_weight balanced
-- joblib serialization
-- matplotlib
-- numpy
-- pandas
-- scikit-learn
-- seaborn
-## Key Dependencies and Libraries
+---
 
-- os
-- glob
-- joblib
-- numpy as np
-- pandas as pd
-- matplotlib
-- seaborn as sns
-- warnings
-- time
-- sklearn.model_selection
-- sklearn.preprocessing
-- sklearn.linear_model
-- sklearn.ensemble
-- sklearn.metrics
-## What it does
+## What it is
 
-Detecção de fraude em cartão com ML: 3 modelos, 284k transações, ROC AUC 0.94 | Credit card fraud detection with ML
-## How to run
+Credit card fraud detection with ML
 
-Requirements: Python 3.x installed.
+---
+
+## Quick Start
 
 ```bash
-# install dependencies (if requirements.txt exists)
+# Clone and enter
+git clone https://github.com/KelvinOliveiraCode/<repo>.git
+cd <repo>
+
+# Install dependencies
 pip install -r requirements.txt
-```
 
-```bash
-# run
+# Run the project
 python main.py
-```
 
-```bash
-# run tests
+# Run tests
 pytest
 ```
-## Project Structure (Key Classes)
+
+## How it works
+
+The project is organized as a **modular pipeline** with independent stages:
+
+- `inspecionar_modelo`
+- `main`
+
+Each module has a single responsibility and can be tested or replaced independently.
+
+---
+
+## Capabilities
+
+| Capability | Description |
+|------------|-------------|
+| Data Loading | Auto-download TensorFlow creditcard.csv (284k transactions) with local caching |
+| EDA & Visualization | Class distribution, Amount histograms, correlation heatmaps (matplotlib/seaborn) |
+| Preprocessing | RobustScaler on Amount/Time, stratified split, duplicate removal |
+| Balancing | SMOTE oversampling (fallback: class_weight="balanced") |
+| Modeling | LogisticRegression, RandomForest, ExtraTrees with RandomizedSearchCV (StratifiedKFold) |
+| Metrics | Accuracy, Precision, Recall, F1, ROC AUC, Specificity, Confusion Matrix |
+| Selection | Weighted score: Recall 40% + F1 30% + Precision 20% + Accuracy 10% |
+| Persistence | joblib serialization for model, scaler, and full results |
 
 
-## Trade-offs and Technical Decisions
+---
 
-- Standard library whenever possible; external dependencies only when the benefit justifies maintenance.
-- Linear, modular pipeline: each step (EDA, preprocessing, balancing, modeling, evaluation) is an isolated function, easing tests and substitution.
-- Optional SMOTE with fallback to `class_weight="balanced"` when `imbalanced-learn` is not installed.
-- `RobustScaler` applied only to `Amount` and `Time`; anonymized features (V1-V28) already normalized in the original dataset.
-- Model selection by weighted score: Recall(40%) + F1(30%) + Precision(20%) + Accuracy(10%) ,  prioritizes fraud detection (recall) without ignoring precision.
-- Artifacts saved via `joblib`: model, scaler, and full results for reproducibility.
-## Known Limitations
+## Showcase
 
-- Limited to the fraud detection pipeline scope; not a full ML platform.
-- Depends on Python 3.x and libraries listed in `requirements.txt`.
-- SMOTE only available if `imbalanced-learn` is installed; otherwise falls back to `class_weight`.
-- Fixed dataset (TensorFlow creditcard.csv); no ingestion pipeline for new data.
-- Models trained on CPU; no GPU/TPU support configured.
-## Tests
+### Fraud Detection Pipeline
 
-```bash
-pytest
-```
-No automated tests detected in scan.
+1. **Load** ,  Auto-fetch 284k transactions (TensorFlow dataset) with local caching
+2. **EDA** ,  Class imbalance (0.17% fraud), Amount distributions, correlation heatmap
+3. **Preprocess** ,  RobustScaler on Amount/Time, stratified 80/20 split
+4. **Balance** ,  SMOTE oversampling (fallback: class_weight=balanced)
+5. **Model** ,  3 algorithms, RandomizedSearchCV, StratifiedKFold, F1 scoring
+6. **Select** ,  Weighted score: Recall 40% + F1 30% + Precision 20% + Acc 10%
+7. **Export** ,  joblib saves model, scaler, full results
+
+[View main.py](main.py) · [Inspect Model](inspecionar_modelo.py)
+
+---
+
+## FAQ
+
+<details>
+<summary><strong>Why SMOTE with class_weight fallback?</strong></summary>
+
+SMOTE generates synthetic minority samples but requires imbalanced-learn. The fallback ensures the pipeline runs even without it.
+
+</details>
+
+<details>
+<summary><strong>Why weighted score for model selection?</strong></summary>
+
+Fraud detection prioritizes Recall (catching frauds). The 40/30/20/10 weighting balances Recall with Precision and F1.
+
+</details>
+
+<details>
+<summary><strong>Can I use this with new data?</strong></summary>
+
+Yes ,  retrain by running main.py with your CSV (same schema). The pipeline handles download, preprocessing, and model export automatically.
+
+</details>
+
+
+
+---
+
+## Documentation
+
+- **Source Code** ,  Browse the `src/` directory for implementation details
+- **API Reference** ,  Inline docstrings + type hints
+- **Architecture Diagram** ,  See [architecture.mermaid](docs/architecture.mermaid) (if present)
+- **Changelog** ,  [CHANGELOG.md](CHANGELOG.md) (if present)
+- **Contributing** ,  [CONTRIBUTING.md](CONTRIBUTING.md) (if present)
+
 ## License
 
-Distributed under the MIT License. See the `LICENSE` file in this repository.
-## Author
+[MIT](LICENSE) ,  Kelvin Oliveira
 
-Kelvin Oliveira ,  https://github.com/KelvinOliveiraCode
-Portfolio: https://kelvinoliveiracode.github.io/portfolio/
+---
+
+<div align="center">
+
+**Built with** · Python 3 + scikit-learn + pandas
+
+**Author** · [Kelvin Oliveira](https://github.com/KelvinOliveiraCode) · [Portfolio](https://kelvinoliveiracode.github.io/portfolio/)
+
+</div>
