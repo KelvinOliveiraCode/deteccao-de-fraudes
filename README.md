@@ -15,14 +15,14 @@ Laboratório de aprendizado de máquina. Reprocessado e verificado pelo agente e
 ## Funcionalidades
 
 - **Auto-download do dataset** `creditcard.csv` (TensorFlow Storage) com cache local.
-- **EDA**: distribuição de classes, top-10 correlações com a variável alvo, histogramas e heatmap (matplotlib/seaborn), plots salvos em `plots/`.
-- **Pré-processamento**: remoção de duplicatas, `RobustScaler` em `Amount`/`Time`, split estratificado 80/20 com `random_state=42`.
-- **Balanceamento**: usa `class_weight='balanced'` (fallback quando `imbalanced-learn`/SMOTE não está instalado).
+- EDA: distribuição de classes, top-10 correlações com a variável alvo, histogramas e heatmap (matplotlib/seaborn), plots salvos em `plots/`.
+- Pré-processamento: remoção de duplicatas, `RobustScaler` em `Amount`/`Time`, split estratificado 80/20 com `random_state=42`.
+- Balanceamento: usa `class_weight='balanced'` (fallback quando `imbalanced-learn`/SMOTE não está instalado).
 - **3 modelos** com ajuste de hiperparâmetros (`RandomizedSearchCV` + `StratifiedKFold`).
-- **Métricas**: Accuracy, Precision, Recall, F1, ROC AUC, Specificity e Confusion Matrix.
-- **Seleção por score ponderado**: Recall 40% + F1 30% + Precision 20% + Accuracy 10%.
-- **Exportação via joblib**: melhor modelo, scaler e resultados completos.
-- **`inspecionar_modelo.py`**: carrega e inspeciona os `.joblib` gerados.
+- Métricas: Accuracy, Precision, Recall, F1, ROC AUC, Specificity e Confusion Matrix.
+- Seleção por score ponderado: Recall 40% + F1 30% + Precision 20% + Accuracy 10%.
+- Exportação via joblib: melhor modelo, scaler e resultados completos.
+- `inspecionar_modelo.py`: carrega e inspeciona os `.joblib` gerados.
 
 ## Arquitetura
 
@@ -49,7 +49,7 @@ flowchart LR
 
 ## Estrutura do repositório
 
-```
+```text
 deteccao-de-fraudes/
 ├── main.py                # pipeline completo (509 linhas)
 ├── inspecionar_modelo.py  # inspeção dos .joblib (286 linhas)
@@ -100,16 +100,16 @@ No modelo escolhido (ExtraTrees), a matriz de confusão deu 71 fraudes detectada
 
 ## Decisões técnicas e trade-offs
 
-- **`class_weight='balanced'` em vez de SMOTE por padrão**: roda sem a dependência extra `imbalanced-learn`; SMOTE entra como fallback se instalado.
-- **RobustScaler apenas em `Amount` e `Time`**: as demais features `V1..V28` já vêm anonimizadas e centradas do dataset original.
-- **Score ponderado para escolher modelo**: em fraude, "pegar o fraudador" vale mais do que acertar a maioria legítima.
+- `class_weight='balanced'` em vez de SMOTE por padrão: roda sem a dependência extra `imbalanced-learn`; SMOTE entra como fallback se instalado.
+- RobustScaler apenas em `Amount` e `Time`: as demais features `V1..V28` já vêm anonimizadas e centradas do dataset original.
+- Score ponderado para escolher modelo: em fraude, "pegar o fraudador" vale mais do que acertar a maioria legítima.
 
 ## Limitações conhecidas e roadmap
 
-- As features `V1..V28` são anônimas (PCA do dataset original) — não dá para saber o que representam.
+- As features `V1..V28` são anônimas (PCA do dataset original), não dá para saber o que representam.
 - A classe minoritária tem apenas 492 exemplos; o modelo florestal detecta ~75% das fraudes no split de teste.
 - Não há engenharia de features nem séries temporais; o label `Time` não é explorado a fundo.
-- **Risco de vazamento**: o split estratificado usa 80/20 aleatório com semente fixa; como o dataset é anonimizado e sem temporalidade clara, o vazamento entre treino/teste é pouco provável, mas não foi testado de forma específica.
+- Risco de vazamento: o split estratificado usa 80/20 aleatório com semente fixa; como o dataset é anonimizado e sem temporalidade clara, o vazamento entre treino/teste é pouco provável, mas não foi testado de forma específica.
 
 ## Processo de desenvolvimento
 
@@ -117,6 +117,6 @@ Projeto individual de Kelvin Oliveira, construído com agentes de IA orquestrado
 
 ## Licença e autor
 
-MIT — Copyright (c) 2026 Kelvin Rebelo de Oliveira.
+MIT. Copyright (c) 2026 Kelvin Rebelo de Oliveira.
 
 **Autor**: [Kelvin Oliveira](https://github.com/KelvinOliveiraCode) · [Portfólio](https://kelvinoliveiracode.github.io/portfolio/)
